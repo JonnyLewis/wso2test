@@ -1,0 +1,14 @@
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="GoogleSheetsConnectorSequence">
+    <property name="uri.var.accessToken" expression="get-property('google.accessToken')" scope="default" type="STRING"/>
+    <property name="uri.var.spreadsheetId" expression="get-property('google.spreadsheetId')" scope="default" type="STRING"/>
+    <property name="uri.var.range" value="Sheet1!A1:D1" type="STRING"/>
+    <google-spreadsheet.init>
+        <accessToken>{$ctx:uri.var.accessToken}</accessToken>
+    </google-spreadsheet.init>
+    <google-spreadsheet.createRow>
+        <spreadsheetId>{$ctx:uri.var.spreadsheetId}</spreadsheetId>
+        <range>{$ctx:uri.var.range}</range>
+        <values>{$ctx:payload}</values>
+    </google-spreadsheet.createRow>
+    <respond/>
+</sequence>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/apitest" name="apitest" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" uri-template="/updateSheet">
+        <inSequence>
+            <property name="caseId" expression="get-property('transport', 'Case-ID')" scope="default" type="STRING"/>
+            <filter source="boolean(get-property('caseId'))" regex="false">
+                <then>
+                    <script language="js">mc.setProperty("caseId", java.util.UUID.randomUUID().toString());</script>
+                </then>
+                <else/>
+            </filter>
+            <payloadFactory media-type="json">
+                <format>{"name": "$1", "surname": "$2", "idNumber": "$3", "caseId": "$4"}</format>
+                <args>
+                    <arg evaluator="json" expression="$.name"/>
+                    <arg evaluator="json" expression="$.surname"/>
+                    <arg evaluator="json" expression="$.idNumber"/>
+                    <arg expression="get-property('caseId')"/>
+                </args>
+            </payloadFactory>
+            <sequence key="GoogleSheetsConnectorSequence"/>
+        </inSequence>
+        <faultSequence>
+            <log level="custom">
+                <property name="ERROR" value="An error has occurred"/>
+            </log>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>
